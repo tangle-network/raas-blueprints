@@ -2,7 +2,7 @@
 
 # Tangle Network Blueprints 🌐
 
-A collection of official blueprints for the Tangle Network, providing ready-to-use service implementations for various blockchain infrastructure needs.
+A collection of blueprints for deploying and managing rollup chains as a service, enabling automated deployment and operation of Layer 2 and Layer 3 scaling solutions through the Tangle Network.
 
 ## Available Blueprints
 
