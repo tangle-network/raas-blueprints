@@ -33,7 +33,7 @@ alloy-consensus = { version = "0.1" }
 alloy-transport = { version = "0.1" }
 alloy-transport-http = { version = "0.1" }
 async-trait = "0.1"
-blueprint-metadata = "0.1.6"
+blueprint-metadata = "0.1.7"
 color-eyre = "0.6"
 gadget-sdk = { version = "0.4.0", default-features = false, features = ["getrandom"] }
 serde = "1.0.215"
