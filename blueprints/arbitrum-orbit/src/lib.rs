@@ -26,29 +26,29 @@ load_abi!(
 );
 
 #[derive(Serialize, Deserialize)]
-struct DeploymentResult {
-    rollup_address: Address,
-    inbox_address: Address,
-    admin_address: Address,
-    sequencer_inbox_address: Address,
-    transaction_hash: String,
+pub struct DeploymentResult {
+    pub rollup_address: Address,
+    pub inbox_address: Address,
+    pub admin_address: Address,
+    pub sequencer_inbox_address: Address,
+    pub transaction_hash: String,
 }
 
-#[derive(Serialize)]
-struct RollupConfig {
-    chain_id: u64,
-    owner: Address,
-    validators: Vec<Address>,
-    batch_posters: Vec<Address>,
-    native_token: Option<Address>,
-    data_availability_committee: bool,
-    is_custom_fee_token: bool,
-    custom_fee_token: Option<Address>,
-    setup_token_bridge: bool,
-    native_token_is_erc20: bool,
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RollupConfig {
+    pub chain_id: u64,
+    pub owner: Address,
+    pub validators: Vec<Address>,
+    pub batch_posters: Vec<Address>,
+    pub native_token: Option<Address>,
+    pub data_availability_committee: bool,
+    pub is_custom_fee_token: bool,
+    pub custom_fee_token: Option<Address>,
+    pub setup_token_bridge: bool,
+    pub native_token_is_erc20: bool,
 }
 
-async fn deploy_rollup(config: RollupConfig) -> Result<DeploymentResult> {
+pub async fn deploy_rollup(config: RollupConfig) -> Result<DeploymentResult> {
     let config_json = serde_json::to_string(&config)?;
     let output = Command::new("node")
         .arg("scripts/deploy-rollup.ts")
@@ -66,7 +66,7 @@ async fn deploy_rollup(config: RollupConfig) -> Result<DeploymentResult> {
     Ok(result)
 }
 
-async fn setup_initial_configuration(
+pub async fn setup_initial_configuration(
     deployment: &DeploymentResult,
     config: &RollupConfig,
     context: &ServiceContext,
@@ -99,7 +99,8 @@ async fn setup_initial_configuration(
         batch_posters: config.batch_posters.clone(),
         is_active: true,
     };
-    manage_batch_posters(batch_poster_params, context.clone())?;
+    let batch_poster_bytes = serde_json::to_vec(&batch_poster_params)?;
+    manage_batch_posters(batch_poster_bytes, context.clone())?;
 
     // Set initial validators
     let validator_params = ValidatorParams {
@@ -107,7 +108,8 @@ async fn setup_initial_configuration(
         validators: config.validators.clone(),
         is_active: true,
     };
-    set_validators(validator_params, context.clone())?;
+    let validator_bytes = serde_json::to_vec(&validator_params)?;
+    set_validators(validator_bytes, context.clone())?;
 
     Ok(())
 }

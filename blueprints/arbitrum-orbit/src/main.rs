@@ -1,18 +1,13 @@
 use alloy_primitives::Address;
 use arbitrum_orbit_blueprint::{
-    jobs::{
-        AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler,
-        ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler,
-        SetValidatorsEventHandler,
-    },
-    OrbitRaaSBlueprint,
+    deploy_rollup, jobs::{
+        AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler, ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler, ServiceContext, SetValidatorsEventHandler
+    }, setup_initial_configuration, OrbitRaaSBlueprint, RollupConfig
 };
 use color_eyre::Result;
 use gadget_sdk::{self as sdk, utils::evm::get_provider_http};
 use sdk::runners::tangle::TangleConfig;
 use sdk::runners::BlueprintRunner;
-use serde::{Deserialize, Serialize};
-use std::process::Command;
 
 #[sdk::main(env)]
 async fn main() -> Result<()> {
@@ -57,11 +52,11 @@ async fn main() -> Result<()> {
     gadget_sdk::info!("Initial configuration completed");
 
     // Initialize all jobs
-    let set_validators = SetValidatorsEventHandler::new(&env, context).await?;
-    let add_executors = AddExecutorsEventHandler::new(&env, context).await?;
+    let set_validators = SetValidatorsEventHandler::new(&env, context.clone()).await?;
+    let add_executors = AddExecutorsEventHandler::new(&env, context.clone()).await?;
     let configure_fast_withdrawals =
-        ConfigureFastWithdrawalsEventHandler::new(&env, context).await?;
-    let manage_batch_postesr = ManageBatchPostersEventHandler::new(&env, context).await?;
+        ConfigureFastWithdrawalsEventHandler::new(&env, context.clone()).await?;
+    let manage_batch_posters = ManageBatchPostersEventHandler::new(&env, context.clone()).await?;
     let configure_fee_recipients = ConfigureFeeRecipientsEventHandler::new(&env, context).await?;
 
     // Start the event watcher
@@ -69,7 +64,7 @@ async fn main() -> Result<()> {
     BlueprintRunner::new(tangle_config, env)
         .job(set_validators)
         .job(add_executors)
-        .job(configure_fast_withdraw)
+        .job(configure_fast_withdrawals)
         .job(manage_batch_posters)
         .job(configure_fee_recipients)
         .run()

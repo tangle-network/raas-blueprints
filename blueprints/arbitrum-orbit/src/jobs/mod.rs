@@ -2,7 +2,7 @@ use alloy_primitives::Address;
 use api::services::events::JobCalled;
 use gadget_sdk as sdk;
 use sdk::event_listener::tangle::{
-    jobs::{services_post_processor, services_pre_processor},
+    jobs::services_pre_processor,
     TangleEventListener,
 };
 use sdk::tangle_subxt::tangle_testnet_runtime::api;
@@ -62,36 +62,28 @@ pub struct FeeRecipientParams {
     pub weights: Vec<u64>,
 }
 
-// Macro to reduce code duplication in job implementations
-macro_rules! impl_node_script_job {
-    ($job_name:ident, $params_type:ty, $id:expr) => {
+macro_rules! create_job {
+    ($id:expr, $name:ident, $params_type:ty) => {
         #[sdk::job(
-                    id = $id,
-                    params(params),
-                    event_listener(
-                        listener = TangleEventListener::<ServiceContext, JobCalled>,
-                        pre_processor = services_pre_processor,
-                    ),
-                )]
-        pub fn $job_name(
-            params: $params_type,
-            _context: ServiceContext,
-        ) -> Result<String, std::io::Error> {
-            let output = Command::new("node")
-                .arg(concat!(
-                    "scripts/",
-                    stringify!($job_name).replace("_", "-"),
-                    ".ts"
-                ))
-                .arg(serde_json::to_string(&params).unwrap())
-                .output()?;
+            id = $id,
+            params(params_bytes),
+            event_listener(
+                listener = TangleEventListener::<ServiceContext, JobCalled>,
+                pre_processor = services_pre_processor,
+            ),
+        )]
+        pub fn $name(
+            params_bytes: Vec<u8>,
+            context: ServiceContext,
+        ) -> Result<String, Infallible> {
+            let params: $params_type = serde_json::from_slice(&params_bytes)
+                .expect(&format!("Failed to deserialize {} params", stringify!($name)));
 
-            if !output.status.success() {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    String::from_utf8_lossy(&output.stderr).to_string(),
-                ));
-            }
+            let output = Command::new("node")
+                .arg(format!("scripts/{}.ts", stringify!($name).replace("_", "-")))
+                .arg(serde_json::to_string(&params).unwrap())
+                .output()
+                .expect("Failed to execute script");
 
             Ok(String::from_utf8_lossy(&output.stdout).to_string())
         }
@@ -99,16 +91,16 @@ macro_rules! impl_node_script_job {
 }
 
 // Job to set validators
-impl_node_script_job!(set_validators, ValidatorParams, 1);
+create_job!(1, set_validators, ValidatorParams);
 
-// Job to add privileged executors
-impl_node_script_job!(add_executors, ExecutorParams, 2);
+// Job to add privileged executors 
+create_job!(2, add_executors, ExecutorParams);
 
 // Job to configure fast withdrawals
-impl_node_script_job!(configure_fast_withdrawals, FastWithdrawalParams, 3);
+create_job!(3, configure_fast_withdrawals, FastWithdrawalParams);
 
 // Job to manage batch posters
-impl_node_script_job!(manage_batch_posters, BatchPosterParams, 4);
+create_job!(4, manage_batch_posters, BatchPosterParams);
 
 // Job to configure fee recipients
-impl_node_script_job!(configure_fee_recipients, FeeRecipientParams, 5);
+create_job!(5, configure_fee_recipients, FeeRecipientParams);

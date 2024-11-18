@@ -1,0 +1,16 @@
+[package]
+name = "orbit-sequencer-deployer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
+keywords.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+gadget-sdk.workspace = true
+serde.workspace = true
+tokio-stream.workspace = true
