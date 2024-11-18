@@ -1,0 +1,52 @@
+[package]
+name = "arbitrum-orbit-blueprint"
+version.workspace = true
+edition.workspace = true
+description = "A Tangle Blueprint toolkit for Rollup-as-a-Service deployments"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
+keywords.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+alloy-contract.workspace = true
+alloy-primitives.workspace = true
+alloy-sol-types.workspace = true
+async-trait.workspace = true
+color-eyre.workspace = true
+gadget-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+structopt.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[build-dependencies]
+blueprint-metadata.workspace = true
+
+[features]
+default = ["std"]
+std = ["gadget-sdk/std"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "arbitrum-orbit-blueprint"
+path = "src/main.rs"
+
+[package.metadata.blueprint]
+manager = { Evm = "HelloBlueprint" }
+
+[[package.metadata.gadget.Native.sources]]
+owner = "tangle-network"
+repo = "raas-blueprints"
+tag = "0.1.0"
+binaries = [
+    { arch = "Amd64", os = "Linux", name = "amd64-linux-arbitrum-orbit-blueprint-gadget" },
+    { arch = "Arm64", os = "Linux", name = "arm64-linux-arbitrum-orbit-blueprint-gadget" },
+]

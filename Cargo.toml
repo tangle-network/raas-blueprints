@@ -1,0 +1,44 @@
+[workspace]
+members = [
+    "blueprints/*"
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Tangle Network <drew@tangle.tools>"]
+license = "MIT OR Apache-2.0"
+homepage = "https://tangle.tools"
+repository = "https://github.com/tangle-network/raas-blueprints"
+categories = ["cryptography", "cryptography::cryptocurrencies"]
+keywords = ["tangle", "blueprint", "avs"]
+rust-version = "1.81.0"
+
+[workspace.dependencies]
+alloy-primitives = "0.7.2"
+alloy-json-abi = "0.7.2"
+alloy-sol-types = "0.7.2"
+alloy-rpc-client = "0.4.2"
+alloy-rpc-types = { version = "0.1" }
+alloy-rpc-types-eth = { version = "0.1" }
+alloy-provider = { version = "0.1", default-features = false, features = ["reqwest", "ws"] }
+alloy-pubsub = { version = "0.1" }
+alloy-signer = { version = "0.1" }
+alloy-signer-local = { version = "0.1" }
+alloy-network = { version = "0.1" }
+alloy-node-bindings = "0.4.2"
+alloy-contract = { version = "0.1" }
+alloy-consensus = { version = "0.1" }
+alloy-transport = { version = "0.1" }
+alloy-transport-http = { version = "0.1" }
+async-trait = "0.1"
+blueprint-metadata = "0.1.6"
+color-eyre = "0.6"
+gadget-sdk = { version = "0.4.0", default-features = false, features = ["getrandom"] }
+serde = "1.0.215"
+serde_json = "1.0.1"
+structopt = "0.3.26"
+tokio = { version = "^1", default-features = false, features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["parking_lot", "env-filter"] }

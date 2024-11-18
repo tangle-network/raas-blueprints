@@ -1,0 +1,28 @@
+{
+  "name": "arbitrum-orbit-toolkit",
+  "version": "0.1.0",
+  "description": "A toolkit for Arbitrum Orbit Rollups-as-a-Service",
+  "author": "Tangle Network <drew@tangle.tools>",
+  "license": "(MIT OR Apache-2.0)",
+  "homepage": "https://tangle.tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tangle-network/raas-blueprints"
+  },
+  "keywords": [
+    "tangle",
+    "blueprint",
+    "avs",
+    "arbitrum",
+    "orbit"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "type-check": "tsc --noEmit",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@arbitrum/orbit-sdk": "^0.21.2",
+    "viem": "^2.21.47"
+  }
+}
