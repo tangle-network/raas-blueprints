@@ -1,87 +1,107 @@
-# <h1 align="center"> A Tangle Blueprint 🌐 </h1>
+# <h1 align="center"> Rollup-as-a-Service Tangle Blueprints 🌐 </h1>
 
-**A simple Hello World Blueprint for Tangle**
+# Tangle Network Blueprints 🌐
 
-## 📚 Prerequisites
+A collection of official blueprints for the Tangle Network, providing ready-to-use service implementations for various blockchain infrastructure needs.
 
-Before you can run this project, you will need to have the following software installed on your machine:
+## Available Blueprints
+
+### Arbitrum Orbit RaaS (Rollup-as-a-Service)
+
+Deploy and manage Arbitrum Orbit chains through a standardized service interface. This blueprint provides comprehensive management of Orbit chain deployments with the following features:
+
+#### Initial Deployment
+- Automated Orbit chain deployment with customizable configurations
+- Support for both ETH and ERC20 native tokens
+- Configurable token bridge setup
+- Custom fee token configuration
+- Data availability committee settings
+
+#### Chain Management Features
+The blueprint provides several management jobs that can be triggered through the Tangle Network:
+
+1. **Validator Management**
+   - Add/remove chain validators
+   - Enable/disable validator sets
+
+2. **Executor Management**
+   - Configure privileged executors
+   - Manage executor permissions
+
+3. **Batch Poster Configuration**
+   - Set batch poster addresses
+   - Enable/disable batch posters
+
+4. **Fee Management**
+   - Configure fee recipients
+   - Set fee distribution weights
+
+5. **Fast Withdrawals**
+   - Configure withdrawal confirmers
+   - Enable/disable fast withdrawal functionality
+
+## Prerequisites
 
 - [Rust](https://www.rust-lang.org/tools/install)
-- [Forge](https://getfoundry.sh)
-- [Tangle](https://github.com/tangle-network/tangle?tab=readme-ov-file#-getting-started-)
+- [Node.js](https://nodejs.org/) (v16 or later)
+- [Foundry](https://getfoundry.sh)
+- [Tangle CLI](https://github.com/tangle-network/tangle)
 
-You will also need to install [cargo-tangle](https://crates.io/crates/cargo-tangle), our CLI tool for creating and
-deploying Tangle Blueprints:
+## Environment Setup
 
-To install the Tangle CLI, run the following command:
-
-> Supported on Linux, MacOS, and Windows (WSL2)
-
+Required environment variables:
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/tangle-network/gadget/releases/download/cargo-tangle-v0.1.2/cargo-tangle-installer.sh | sh
+PARENT_CHAIN_RPC=           # Parent chain RPC endpoint
+
+UPGRADE_EXECUTOR_ADDRESS=   # Address of the upgrade executor
+OWNER_ADDRESS=             # Owner address for management operations
+OWNER_PRIVATE_KEY=         # Private key for signing transactions
 ```
 
-Or, if you prefer to install the CLI from crates.io:
+## Development
 
+### Build
+**Build smart contracts**
 ```bash
-cargo install cargo-tangle --force # to get the latest version.
+forge build
 ```
-
-## 🚀 Getting Started
-
-Once `cargo-tangle` is installed, you can create a new project with the following command:
-
-```sh
-cargo tangle blueprint create --name <project-name>
+**Build service implementation**
+```bash
+cargo build --release
 ```
-
-and follow the instructions to create a new project.
-
-## 🛠️ Development
-
-Once you have created a new project, you can run the following command to start the project:
-
-```sh
-cargo build
-```
-
-to build the project, and
-
-```sh
+**Deploy blueprint to Tangle Network**
+```bash
 cargo tangle blueprint deploy
 ```
 
-to deploy the blueprint to the Tangle network.
+## Architecture
 
-## 📚 Overview
+### Smart Contracts
+The blueprint includes smart contracts for:
+- Service registration and management
+- Configuration storage and validation
+- Access control and permissions
 
-This project is about creating a simple Hello World Blueprint for Tangle and EigenLayer.
-Blueprints are specifications for <abbr title="Actively Validated Services">AVS</abbr>s on the Tangle Network. An AVS is
-an off-chain service that runs arbitrary computations for a user-specified period of time.
+### Service Implementation
+Built with Rust and the Tangle Network SDK, featuring:
+- TypeScript scripts for chain interaction
+- Job handlers for management operations
+- Secure configuration management
+- Event-driven architecture
 
-Blueprints provide a useful abstraction, allowing developers to create reusable service infrastructures as if they were
-smart contracts. This enables developers to monetize their work and align long-term incentives with the success of their
-creations, benefiting proportionally to their Blueprint's usage.
+## Security Considerations
 
-For more details, please refer to the [project documentation](https://docs.tangle.tools/developers/blueprints).
+- One-time initialization for critical components
+- Role-based access control for management operations
+- Protected configuration updates
+- Secure key management requirements
 
-## 📜 License
+## Contributing
 
-Licensed under either of
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-* Apache License, Version 2.0
-  ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license
-  ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+## License
 
-at your option.
-
-## 📬 Feedback and Contributions
-
-We welcome feedback and contributions to improve this blueprint.
-Please open an issue or submit a pull request on
-our [GitHub repository](https://github.com/tangle-network/blueprint-template/issues).
-
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
+Licensed under:
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+- MIT License ([LICENSE-MIT](LICENSE-MIT))

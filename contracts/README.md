@@ -1,66 +1,34 @@
-## Foundry
+# Orbit RaaS Blueprint
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The Orbit RaaS (Rollup-as-a-Service) Blueprint is a smart contract that manages the configuration and deployment of Arbitrum Orbit chains.
 
-Foundry consists of:
+## Overview
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+The `OrbitRaaSBlueprint` contract extends `BlueprintServiceManagerBase` and provides functionality to:
 
-## Documentation
+- Register operators who can manage Orbit chains
+- Store and manage rollup configurations for each service ID
+- Handle service requests to create new Orbit chains
 
-https://book.getfoundry.sh/
+## Key Features
 
-## Usage
+### Rollup Configuration
+Each Orbit chain can be configured with:
+- Chain ID
+- Owner address
+- Validator set
+- Batch poster addresses  
+- Native token settings
+- Data availability committee settings
+- Custom fee token options
+- Token bridge setup preferences
 
-### Build
+### Operator Management
+- Operators must register before managing chains
+- Operator addresses are derived from their public keys
+- Only registered operators can create and manage chains
 
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+### Service Management 
+- Each service has a unique ID
+- Service requests create new Orbit chains with specified configurations
+- Configurations are stored and retrievable by service ID
