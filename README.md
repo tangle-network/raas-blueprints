@@ -52,7 +52,6 @@ The blueprint provides several management jobs that can be triggered through the
 Required environment variables:
 ```bash
 PARENT_CHAIN_RPC=           # Parent chain RPC endpoint
-
 UPGRADE_EXECUTOR_ADDRESS=   # Address of the upgrade executor
 OWNER_ADDRESS=             # Owner address for management operations
 OWNER_PRIVATE_KEY=         # Private key for signing transactions
