@@ -1,10 +1,7 @@
 use alloy_primitives::Address;
 use api::services::events::JobCalled;
 use gadget_sdk as sdk;
-use sdk::event_listener::tangle::{
-    jobs::services_pre_processor,
-    TangleEventListener,
-};
+use sdk::event_listener::tangle::{jobs::services_pre_processor, TangleEventListener};
 use sdk::tangle_subxt::tangle_testnet_runtime::api;
 use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
@@ -65,22 +62,24 @@ pub struct FeeRecipientParams {
 macro_rules! create_job {
     ($id:expr, $name:ident, $params_type:ty) => {
         #[sdk::job(
-            id = $id,
-            params(params_bytes),
-            event_listener(
-                listener = TangleEventListener::<ServiceContext, JobCalled>,
-                pre_processor = services_pre_processor,
-            ),
-        )]
-        pub fn $name(
-            params_bytes: Vec<u8>,
-            context: ServiceContext,
-        ) -> Result<String, Infallible> {
-            let params: $params_type = serde_json::from_slice(&params_bytes)
-                .expect(&format!("Failed to deserialize {} params", stringify!($name)));
+                    id = $id,
+                    params(params_bytes),
+                    event_listener(
+                        listener = TangleEventListener::<ServiceContext, JobCalled>,
+                        pre_processor = services_pre_processor,
+                    ),
+                )]
+        pub fn $name(params_bytes: Vec<u8>, context: ServiceContext) -> Result<String, Infallible> {
+            let params: $params_type = serde_json::from_slice(&params_bytes).expect(&format!(
+                "Failed to deserialize {} params",
+                stringify!($name)
+            ));
 
             let output = Command::new("node")
-                .arg(format!("scripts/{}.ts", stringify!($name).replace("_", "-")))
+                .arg(format!(
+                    "scripts/{}.ts",
+                    stringify!($name).replace("_", "-")
+                ))
                 .arg(serde_json::to_string(&params).unwrap())
                 .output()
                 .expect("Failed to execute script");
@@ -93,7 +92,7 @@ macro_rules! create_job {
 // Job to set validators
 create_job!(1, set_validators, ValidatorParams);
 
-// Job to add privileged executors 
+// Job to add privileged executors
 create_job!(2, add_executors, ExecutorParams);
 
 // Job to configure fast withdrawals

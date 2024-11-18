@@ -1,8 +1,12 @@
 use alloy_primitives::Address;
 use arbitrum_orbit_blueprint::{
-    deploy_rollup, jobs::{
-        AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler, ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler, ServiceContext, SetValidatorsEventHandler
-    }, setup_initial_configuration, OrbitRaaSBlueprint, RollupConfig
+    deploy_rollup,
+    jobs::{
+        AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler,
+        ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler, ServiceContext,
+        SetValidatorsEventHandler,
+    },
+    setup_initial_configuration, OrbitRaaSBlueprint, RollupConfig,
 };
 use color_eyre::Result;
 use gadget_sdk::{self as sdk, utils::evm::get_provider_http};

@@ -1,4 +1,7 @@
-use gadget_sdk::docker::{bollard::{self, container::LogsOptions, models::ContainerConfig, Docker}, Container};
+use gadget_sdk::docker::{
+    bollard::{self, container::LogsOptions, models::ContainerConfig, Docker},
+    Container,
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
 use tokio_stream::{Stream, StreamExt};
@@ -49,7 +52,10 @@ impl OrbitNode {
 
         // Build command arguments
         let mut args = vec![
-            format!("--parent-chain.connection.url={}", self.config.parent_chain_rpc),
+            format!(
+                "--parent-chain.connection.url={}",
+                self.config.parent_chain_rpc
+            ),
             format!("--chain.id={}", self.config.chain_id),
             format!("--chain.name={}", self.config.chain_name),
             format!("--chain.info-json={}", self.config.chain_info_json),
@@ -95,7 +101,7 @@ impl OrbitNode {
         // Create and start container
         let container = Container::new(&self.docker, NITRO_NODE_IMAGE);
         self.container_id = container.id().map(|id| id.to_string());
-        
+
         if let Some(id) = &self.container_id {
             self.docker.start_container::<String>(id, None).await?;
         }
