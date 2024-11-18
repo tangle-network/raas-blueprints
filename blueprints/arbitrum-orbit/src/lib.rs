@@ -4,7 +4,10 @@ use alloy_primitives::Address;
 use alloy_sol_types::sol;
 use color_eyre::eyre::Result;
 use gadget_sdk::load_abi;
-use jobs::{manage_batch_posters, set_validators, BatchPosterParams, ServiceContext, TokenBridgeParams, ValidatorParams};
+use jobs::{
+    manage_batch_posters, set_validators, BatchPosterParams, ServiceContext, TokenBridgeParams,
+    ValidatorParams,
+};
 use serde::{Deserialize, Serialize};
 
 pub mod jobs;
@@ -72,11 +75,14 @@ async fn setup_initial_configuration(
     if config.setup_token_bridge {
         let output = Command::new("node")
             .arg("scripts/configure-token-bridge.ts")
-            .arg(serde_json::to_string(&TokenBridgeParams {
-                rollup_address: deployment.rollup_address,
-                native_token: config.native_token.unwrap_or(Address::ZERO),
-                owner: config.owner,
-            }).unwrap())
+            .arg(
+                serde_json::to_string(&TokenBridgeParams {
+                    rollup_address: deployment.rollup_address,
+                    native_token: config.native_token.unwrap_or(Address::ZERO),
+                    owner: config.owner,
+                })
+                .unwrap(),
+            )
             .output()?;
 
         if !output.status.success() {

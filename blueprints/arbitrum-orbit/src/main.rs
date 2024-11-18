@@ -1,5 +1,12 @@
 use alloy_primitives::Address;
-use arbitrum_orbit_blueprint::{jobs::{AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler, ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler, SetValidatorsEventHandler}, OrbitRaaSBlueprint};
+use arbitrum_orbit_blueprint::{
+    jobs::{
+        AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler,
+        ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler,
+        SetValidatorsEventHandler,
+    },
+    OrbitRaaSBlueprint,
+};
 use color_eyre::Result;
 use gadget_sdk::{self as sdk, utils::evm::get_provider_http};
 use sdk::runners::tangle::TangleConfig;
@@ -14,7 +21,7 @@ async fn main() -> Result<()> {
     let blueprint_address = Address::from([0; 20]);
     let contract = OrbitRaaSBlueprint::new(blueprint_address, provider);
     let rollup_config_return = contract.getRollupConfig(service_id).call().await?;
-    
+
     let rollup_config = RollupConfig {
         chain_id: rollup_config_return.chainId,
         owner: rollup_config_return.owner,
@@ -52,7 +59,8 @@ async fn main() -> Result<()> {
     // Initialize all jobs
     let set_validators = SetValidatorsEventHandler::new(&env, context).await?;
     let add_executors = AddExecutorsEventHandler::new(&env, context).await?;
-    let configure_fast_withdrawals = ConfigureFastWithdrawalsEventHandler::new(&env, context).await?;
+    let configure_fast_withdrawals =
+        ConfigureFastWithdrawalsEventHandler::new(&env, context).await?;
     let manage_batch_postesr = ManageBatchPostersEventHandler::new(&env, context).await?;
     let configure_fee_recipients = ConfigureFeeRecipientsEventHandler::new(&env, context).await?;
 
@@ -64,7 +72,8 @@ async fn main() -> Result<()> {
         .job(configure_fast_withdraw)
         .job(manage_batch_posters)
         .job(configure_fee_recipients)
-        .run().await?;
+        .run()
+        .await?;
 
     gadget_sdk::info!("Exiting...");
     Ok(())

@@ -66,26 +66,30 @@ pub struct FeeRecipientParams {
 macro_rules! impl_node_script_job {
     ($job_name:ident, $params_type:ty, $id:expr) => {
         #[sdk::job(
-            id = $id,
-            params(params),
-            event_listener(
-                listener = TangleEventListener::<ServiceContext, JobCalled>,
-                pre_processor = services_pre_processor,
-            ),
-        )]
+                    id = $id,
+                    params(params),
+                    event_listener(
+                        listener = TangleEventListener::<ServiceContext, JobCalled>,
+                        pre_processor = services_pre_processor,
+                    ),
+                )]
         pub fn $job_name(
             params: $params_type,
             _context: ServiceContext,
         ) -> Result<String, std::io::Error> {
             let output = Command::new("node")
-                .arg(concat!("scripts/", stringify!($job_name).replace("_", "-"), ".ts"))
+                .arg(concat!(
+                    "scripts/",
+                    stringify!($job_name).replace("_", "-"),
+                    ".ts"
+                ))
                 .arg(serde_json::to_string(&params).unwrap())
                 .output()?;
 
             if !output.status.success() {
                 return Err(std::io::Error::new(
                     std::io::ErrorKind::Other,
-                    String::from_utf8_lossy(&output.stderr).to_string()
+                    String::from_utf8_lossy(&output.stderr).to_string(),
                 ));
             }
 
@@ -97,7 +101,7 @@ macro_rules! impl_node_script_job {
 // Job to set validators
 impl_node_script_job!(set_validators, ValidatorParams, 1);
 
-// Job to add privileged executors  
+// Job to add privileged executors
 impl_node_script_job!(add_executors, ExecutorParams, 2);
 
 // Job to configure fast withdrawals
