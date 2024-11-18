@@ -37,7 +37,7 @@ blueprint-metadata = "0.1.6"
 color-eyre = "0.6"
 gadget-sdk = { version = "0.4.0", default-features = false, features = ["getrandom"] }
 serde = "1.0.215"
-serde_json = "1.0.1"
+serde_json = "1.0.133"
 structopt = "0.3.26"
 tokio = { version = "^1", default-features = false, features = ["full"] }
 tracing = "0.1"
