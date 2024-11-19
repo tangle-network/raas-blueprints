@@ -132,9 +132,7 @@ impl OrbitStack {
             "--http.corsdomain=*".to_string(),
             "--http.addr=0.0.0.0".to_string(),
             "--http.vhosts=*".to_string(),
-            "--ws.port=8548".to_string(),
-            "--ws.addr=0.0.0.0".to_string(),
-            "--ws.origins=*".to_string(),
+            "--http.port=8449".to_string(), // Add explicit HTTP port
         ];
 
         // Add sequencer-specific configuration
@@ -171,27 +169,19 @@ impl OrbitStack {
             image: Some(NITRO_NODE_IMAGE),
             exposed_ports: Some({
                 let mut ports = HashMap::new();
-                ports.insert("8547/tcp", HashMap::new());
-                ports.insert("8548/tcp", HashMap::new());
-                ports.insert("9642/tcp", HashMap::new());
+                ports.insert("8449/tcp", HashMap::new());
                 ports
             }),
             host_config: Some(HostConfig {
                 port_bindings: Some({
                     let mut bindings = HashMap::new();
-                    for (container_port, host_port) in [
-                        ("8547/tcp", "8547"),
-                        ("8548/tcp", "8548"),
-                        ("9642/tcp", "9642"),
-                    ] {
-                        bindings.insert(
-                            container_port.to_string(),
-                            Some(vec![PortBinding {
-                                host_ip: Some("0.0.0.0".to_string()),
-                                host_port: Some(host_port.to_string()),
-                            }]),
-                        );
-                    }
+                    bindings.insert(
+                        "8449/tcp".to_string(),
+                        Some(vec![PortBinding {
+                            host_ip: Some("127.0.0.1".to_string()), // Match docker-compose binding
+                            host_port: Some("8449".to_string()),
+                        }]),
+                    );
                     bindings
                 }),
                 ..Default::default()
