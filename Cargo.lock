@@ -7308,6 +7308,7 @@ dependencies = [
  "gadget-sdk",
  "serde",
  "tokio-stream",
+ "tracing",
 ]
 
 [[package]]

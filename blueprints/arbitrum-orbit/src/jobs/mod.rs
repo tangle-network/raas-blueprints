@@ -62,13 +62,13 @@ pub struct FeeRecipientParams {
 macro_rules! create_job {
     ($id:expr, $name:ident, $params_type:ty) => {
         #[sdk::job(
-                    id = $id,
-                    params(params_bytes),
-                    event_listener(
-                        listener = TangleEventListener::<ServiceContext, JobCalled>,
-                        pre_processor = services_pre_processor,
-                    ),
-                )]
+                                    id = $id,
+                                    params(params_bytes),
+                                    event_listener(
+                                        listener = TangleEventListener::<ServiceContext, JobCalled>,
+                                        pre_processor = services_pre_processor,
+                                    ),
+                                )]
         pub fn $name(params_bytes: Vec<u8>, context: ServiceContext) -> Result<String, Infallible> {
             let params: $params_type = serde_json::from_slice(&params_bytes).expect(&format!(
                 "Failed to deserialize {} params",

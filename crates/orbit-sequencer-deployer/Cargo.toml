@@ -14,3 +14,4 @@ rust-version.workspace = true
 gadget-sdk.workspace = true
 serde.workspace = true
 tokio-stream.workspace = true
+tracing.workspace = true
