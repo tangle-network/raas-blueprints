@@ -1,6 +1,6 @@
-import { Chain, Address } from 'viem';
-import { sanitizePrivateKey as orbitSanitizePrivateKey } from '@arbitrum/orbit-sdk/utils';
-import crypto from 'crypto';
+import { Chain, Address } from "viem";
+import { sanitizePrivateKey as orbitSanitizePrivateKey } from "@arbitrum/orbit-sdk/utils";
+import crypto from "crypto";
 
 /**
  * Gets the block explorer URL for a given chain
@@ -12,8 +12,13 @@ export function getBlockExplorerUrl(chain: Chain): string | undefined {
 /**
  * Calculates time delay from number of blocks for different chains
  */
-export function getTimeDelayFromBlocks(chainId: number, blocks: bigint): string {
-  const seconds = Number(chainId === 8453 || chainId === 84532 ? blocks * 2n : blocks * 12n);
+export function getTimeDelayFromBlocks(
+  chainId: number,
+  blocks: bigint,
+): string {
+  const seconds = Number(
+    chainId === 8453 || chainId === 84532 ? blocks * 2n : blocks * 12n,
+  );
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
@@ -23,10 +28,12 @@ export function getTimeDelayFromBlocks(chainId: number, blocks: bigint): string 
 /**
  * Sanitizes a private key or generates a new one if undefined
  */
-export function withFallbackPrivateKey(privateKey: string | undefined): `0x${string}` {
-  if (typeof privateKey === 'undefined' || privateKey === '') {
+export function withFallbackPrivateKey(
+  privateKey: string | undefined,
+): `0x${string}` {
+  if (typeof privateKey === "undefined" || privateKey === "") {
     const randomBytes = crypto.randomBytes(32);
-    return `0x${randomBytes.toString('hex')}` as `0x${string}`;
+    return `0x${randomBytes.toString("hex")}` as `0x${string}`;
   }
   return orbitSanitizePrivateKey(privateKey);
 }
@@ -35,7 +42,7 @@ export function withFallbackPrivateKey(privateKey: string | undefined): `0x${str
  * Validates an array of addresses and removes duplicates
  */
 export function sanitizeAddresses(addresses: string[]): Address[] {
-  return [...new Set(addresses)].map(addr => addr as Address);
+  return [...new Set(addresses)].map((addr) => addr as Address);
 }
 
 /**

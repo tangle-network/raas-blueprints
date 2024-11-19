@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { Address } from "viem";
 
 export interface RequiredEnvVars {
   DEPLOYER_PRIVATE_KEY: string;
@@ -18,19 +18,21 @@ export type EnvVars = RequiredEnvVars & OptionalEnvVars;
 /**
  * Validates required environment variables
  */
-export function validateRequiredEnvVars(envVars: NodeJS.ProcessEnv): RequiredEnvVars {
+export function validateRequiredEnvVars(
+  envVars: NodeJS.ProcessEnv,
+): RequiredEnvVars {
   const required: (keyof RequiredEnvVars)[] = [
-    'DEPLOYER_PRIVATE_KEY',
-    'PARENT_CHAIN_RPC',
-    'BATCH_POSTER_PRIVATE_KEY',
-    'VALIDATOR_PRIVATE_KEY',
+    "DEPLOYER_PRIVATE_KEY",
+    "PARENT_CHAIN_RPC",
+    "BATCH_POSTER_PRIVATE_KEY",
+    "VALIDATOR_PRIVATE_KEY",
   ];
 
-  const missing = required.filter(key => !envVars[key]);
+  const missing = required.filter((key) => !envVars[key]);
 
   if (missing.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}`
+      `Missing required environment variables: ${missing.join(", ")}`,
     );
   }
 
@@ -45,7 +47,9 @@ export function validateRequiredEnvVars(envVars: NodeJS.ProcessEnv): RequiredEnv
 /**
  * Validates optional environment variables
  */
-export function validateOptionalEnvVars(envVars: NodeJS.ProcessEnv): OptionalEnvVars {
+export function validateOptionalEnvVars(
+  envVars: NodeJS.ProcessEnv,
+): OptionalEnvVars {
   return {
     ROLLUP_ADDRESS: envVars.ROLLUP_ADDRESS,
     ETHEREUM_BEACON_RPC_URL: envVars.ETHEREUM_BEACON_RPC_URL,
@@ -58,9 +62,9 @@ export function validateOptionalEnvVars(envVars: NodeJS.ProcessEnv): OptionalEnv
  */
 export function validateRollupAddress(address?: string): Address | undefined {
   if (!address) return undefined;
-  
-  if (!address.startsWith('0x') || address.length !== 42) {
-    throw new Error('Invalid rollup address format');
+
+  if (!address.startsWith("0x") || address.length !== 42) {
+    throw new Error("Invalid rollup address format");
   }
 
   return address as Address;

@@ -1,5 +1,9 @@
-import { Chain } from 'viem';
-import { arbitrumSepolia, arbitrum as arbitrumOne, arbitrumNova } from 'viem/chains';
+import { Chain } from "viem";
+import {
+  arbitrumSepolia,
+  arbitrum as arbitrumOne,
+  arbitrumNova,
+} from "viem/chains";
 
 export const CHAIN_IDS = {
   ARBITRUM_ONE: arbitrumOne.id,
@@ -15,7 +19,7 @@ export const DEFAULT_CHAINS: Record<number, Chain> = {
 
 export const CHAIN_BLOCK_TIMES = {
   ETHEREUM: 12n, // ~12 seconds
-  OPTIMISM: 2n,  // ~2 seconds
+  OPTIMISM: 2n, // ~2 seconds
   ARBITRUM: 12n, // Uses L1 block time
 } as const;
 
@@ -40,11 +44,11 @@ export const DEFAULT_CONFIG = {
 } as const;
 
 export const ERROR_MESSAGES = {
-  INVALID_CHAIN_ID: 'Invalid chain ID provided',
-  INVALID_ADDRESS: 'Invalid address format',
-  INVALID_PRIVATE_KEY: 'Invalid private key format',
-  INVALID_FEE_WEIGHTS: 'Fee weights must sum to 10000 basis points',
-  INVALID_VALIDATOR_COUNT: 'Invalid number of validators',
-  INVALID_BATCH_POSTER_COUNT: 'Invalid number of batch posters',
-  INVALID_CONFIRMATION_COUNT: 'Invalid number of confirmations',
+  INVALID_CHAIN_ID: "Invalid chain ID provided",
+  INVALID_ADDRESS: "Invalid address format",
+  INVALID_PRIVATE_KEY: "Invalid private key format",
+  INVALID_FEE_WEIGHTS: "Fee weights must sum to 10000 basis points",
+  INVALID_VALIDATOR_COUNT: "Invalid number of validators",
+  INVALID_BATCH_POSTER_COUNT: "Invalid number of batch posters",
+  INVALID_CONFIRMATION_COUNT: "Invalid number of confirmations",
 } as const;

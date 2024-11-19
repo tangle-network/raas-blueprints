@@ -1,18 +1,18 @@
-import { createPublicClient, http, Chain, PublicClient } from 'viem';
-import { arbitrumSepolia } from 'viem/chains';
-import { 
-  arbOwnerPublicActions, 
+import { createPublicClient, http, Chain, PublicClient } from "viem";
+import { arbitrumSepolia } from "viem/chains";
+import {
+  arbOwnerPublicActions,
   arbGasInfoPublicActions,
-  rollupAdminLogicPublicActions 
-} from '@arbitrum/orbit-sdk';
-import type { ClientConfig } from './types';
+  rollupAdminLogicPublicActions,
+} from "@arbitrum/orbit-sdk";
+import type { ClientConfig } from "./types";
 
 /**
  * Creates a public client for the parent chain with optional RPC URL
  */
 export function createParentChainClient(
   chain: Chain = arbitrumSepolia,
-  rpcUrl?: string
+  rpcUrl?: string,
 ): PublicClient {
   return createPublicClient({
     chain,
@@ -25,22 +25,26 @@ export function createParentChainClient(
  */
 export function createOrbitChainClient(
   chainId: number,
+  chainName: string,
+  chainNetworkName: string,
+  nativeCurrency: { name: string; symbol: string; decimals: number },
   rpcUrl: string,
-  rollupAddress?: `0x${string}`
+  rollupAddress?: `0x${string}`,
 ): PublicClient {
   const client = createPublicClient({
     chain: {
       id: chainId,
-      name: 'Orbit Chain',
-      network: 'orbit',
-      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+      name: chainName,
+      network: chainNetworkName,
+      nativeCurrency,
       rpcUrls: {
         default: { http: [rpcUrl] },
         public: { http: [rpcUrl] },
       },
     },
     transport: http(),
-  }).extend(arbOwnerPublicActions)
+  })
+    .extend(arbOwnerPublicActions)
     .extend(arbGasInfoPublicActions);
 
   // Add rollup admin actions if rollup address is provided
@@ -48,7 +52,7 @@ export function createOrbitChainClient(
     return client.extend(
       rollupAdminLogicPublicActions({
         rollup: rollupAddress,
-      })
+      }),
     );
   }
 
@@ -61,12 +65,19 @@ export function createOrbitChainClient(
 export function createChainClients(config: ClientConfig) {
   const parentClient = createParentChainClient(
     config.parentChain,
-    config.parentChainRpc
+    config.parentChainRpc,
   );
 
-  const orbitClient = config.orbitChainId && config.orbitChainRpc
-    ? createOrbitChainClient(config.orbitChainId, config.orbitChainRpc)
-    : undefined;
+  const orbitClient =
+    config.orbitChainId && config.orbitChainRpc
+      ? createOrbitChainClient(
+          config.orbitChainId,
+          config.orbitChainName,
+          config.orbitChainNetworkName,
+          config.orbitChainNativeCurrency,
+          config.orbitChainRpc,
+        )
+      : undefined;
 
   return {
     parentChainClient: parentClient,

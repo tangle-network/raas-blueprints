@@ -1,4 +1,4 @@
-import { Address, PublicClient, PrivateKeyAccount } from 'viem';
+import { Address, PublicClient, PrivateKeyAccount } from "viem";
 import {
   createTokenBridgeEnoughCustomFeeTokenAllowance,
   createTokenBridgePrepareCustomFeeTokenApprovalTransactionRequest,
@@ -6,15 +6,12 @@ import {
   createTokenBridgePrepareTransactionReceipt,
   createTokenBridgePrepareSetWethGatewayTransactionRequest,
   createTokenBridgePrepareSetWethGatewayTransactionReceipt,
-} from '@arbitrum/orbit-sdk';
-import type { TokenBridgeContracts } from '../core/types';
+} from "@arbitrum/orbit-sdk";
+import type { TokenBridgeContracts } from "../core/types";
 
 export interface CreateTokenBridgeParams {
   rollupAddress: Address;
-  owner: {
-    address: Address;
-    account: PrivateKeyAccount;
-  };
+  owner: PrivateKeyAccount;
   nativeToken?: Address;
   retryableGasOverrides?: {
     gasLimit?: {
@@ -35,7 +32,7 @@ export interface CreateTokenBridgeResult {
 export async function createTokenBridge(
   params: CreateTokenBridgeParams,
   parentChainClient: PublicClient,
-  orbitChainClient: PublicClient
+  orbitChainClient: PublicClient,
 ): Promise<CreateTokenBridgeResult> {
   // Handle custom fee token if specified
   if (params.nativeToken) {
@@ -45,17 +42,23 @@ export async function createTokenBridge(
       publicClient: parentChainClient,
     };
 
-    if (!(await createTokenBridgeEnoughCustomFeeTokenAllowance(allowanceParams))) {
-      const approvalRequest = await createTokenBridgePrepareCustomFeeTokenApprovalTransactionRequest(
-        allowanceParams
-      );
+    if (
+      !(await createTokenBridgeEnoughCustomFeeTokenAllowance(allowanceParams))
+    ) {
+      const approvalRequest =
+        await createTokenBridgePrepareCustomFeeTokenApprovalTransactionRequest(
+          allowanceParams,
+        );
 
-      const approvalSerialized = await params.owner.account.signTransaction(approvalRequest);
+      const approvalSerialized =
+        await params.owner.signTransaction(approvalRequest);
       const approvalTxHash = await parentChainClient.sendRawTransaction({
         serializedTransaction: approvalSerialized,
       });
 
-      await parentChainClient.waitForTransactionReceipt({ hash: approvalTxHash });
+      await parentChainClient.waitForTransactionReceipt({
+        hash: approvalTxHash,
+      });
     }
   }
 
@@ -70,13 +73,13 @@ export async function createTokenBridge(
     account: params.owner.address,
   });
 
-  const txSerialized = await params.owner.account.signTransaction(txRequest);
+  const txSerialized = await params.owner.signTransaction(txRequest);
   const txHash = await parentChainClient.sendRawTransaction({
     serializedTransaction: txSerialized,
   });
 
   const receipt = createTokenBridgePrepareTransactionReceipt(
-    await parentChainClient.waitForTransactionReceipt({ hash: txHash })
+    await parentChainClient.waitForTransactionReceipt({ hash: txHash }),
   );
 
   // Wait for retryables to execute
@@ -86,22 +89,24 @@ export async function createTokenBridge(
 
   // Set WETH gateway if using ETH as fee token
   if (!params.nativeToken) {
-    const wethRequest = await createTokenBridgePrepareSetWethGatewayTransactionRequest({
-      rollup: params.rollupAddress,
-      parentChainPublicClient: parentChainClient,
-      orbitChainPublicClient: orbitChainClient,
-      account: params.owner.address,
-      retryableGasOverrides: params.retryableGasOverrides,
-    });
+    const wethRequest =
+      await createTokenBridgePrepareSetWethGatewayTransactionRequest({
+        rollup: params.rollupAddress,
+        parentChainPublicClient: parentChainClient,
+        orbitChainPublicClient: orbitChainClient,
+        account: params.owner.address,
+        retryableGasOverrides: params.retryableGasOverrides,
+      });
 
-    const wethSerialized = await params.owner.account.signTransaction(wethRequest);
+    const wethSerialized = await params.owner.signTransaction(wethRequest);
     const wethTxHash = await parentChainClient.sendRawTransaction({
       serializedTransaction: wethSerialized,
     });
 
-    const wethReceipt = createTokenBridgePrepareSetWethGatewayTransactionReceipt(
-      await parentChainClient.waitForTransactionReceipt({ hash: wethTxHash })
-    );
+    const wethReceipt =
+      createTokenBridgePrepareSetWethGatewayTransactionReceipt(
+        await parentChainClient.waitForTransactionReceipt({ hash: wethTxHash }),
+      );
 
     const wethRetryableReceipts = await wethReceipt.waitForRetryables({
       orbitPublicClient: orbitChainClient,
@@ -117,6 +122,6 @@ export async function createTokenBridge(
   return {
     transactionHash: receipt.transactionHash,
     contracts,
-    retryableHashes: retryableReceipts.map(r => r.transactionHash),
+    retryableHashes: retryableReceipts.map((r) => r.transactionHash),
   };
 }

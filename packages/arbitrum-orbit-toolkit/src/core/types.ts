@@ -1,4 +1,4 @@
-import { Address, Chain } from 'viem';
+import { Address, Chain } from "viem";
 
 export interface CoreContracts {
   rollup: Address;
@@ -59,6 +59,9 @@ export interface FeeRecipient {
 export interface ClientConfig {
   parentChain: Chain;
   parentChainRpc?: string;
-  orbitChainId?: number;
-  orbitChainRpc?: string;
+  orbitChainId: number;
+  orbitChainRpc: string;
+  orbitChainName: string;
+  orbitChainNetworkName: string;
+  orbitChainNativeCurrency: { name: string; symbol: string; decimals: number };
 }

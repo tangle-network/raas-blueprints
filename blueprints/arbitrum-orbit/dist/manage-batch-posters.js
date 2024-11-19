@@ -1,14 +1,14 @@
-import { setBatchPosters } from 'arbitrum-orbit-toolkit';
-import { createPublicClient, http } from 'viem';
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const arbitrum_orbit_toolkit_1 = require("arbitrum-orbit-toolkit");
+const viem_1 = require("viem");
 async function main() {
     const params = JSON.parse(process.argv[2]);
-    const parentChainClient = createPublicClient({
-        transport: http(process.env.PARENT_CHAIN_RPC)
+    const parentChainClient = (0, viem_1.createPublicClient)({
+        transport: (0, viem_1.http)(process.env.PARENT_CHAIN_RPC)
     });
-    
     try {
-        const result = await setBatchPosters({
+        const result = await (0, arbitrum_orbit_toolkit_1.setBatchPosters)({
             rollupAddress: params.rollup_address,
             batchPosters: params.batch_posters,
             isActive: params.is_active,
@@ -18,12 +18,11 @@ async function main() {
                 account: process.env.OWNER_PRIVATE_KEY
             }
         }, parentChainClient);
-        
         console.log(JSON.stringify({ transactionHash: result }));
-    } catch (error) {
+    }
+    catch (error) {
         console.error(error);
         process.exit(1);
     }
 }
-
 main().catch(console.error);

@@ -43,14 +43,6 @@ pub struct FastWithdrawalParams {
     pub is_active: bool,
 }
 
-// Parameters for batch poster management
-#[derive(Serialize, Deserialize)]
-pub struct BatchPosterParams {
-    pub rollup_address: Address,
-    pub batch_posters: Vec<Address>,
-    pub is_active: bool,
-}
-
 // Parameters for fee recipient configuration
 #[derive(Serialize, Deserialize)]
 pub struct FeeRecipientParams {
@@ -62,13 +54,13 @@ pub struct FeeRecipientParams {
 macro_rules! create_job {
     ($id:expr, $name:ident, $params_type:ty) => {
         #[sdk::job(
-                                    id = $id,
-                                    params(params_bytes),
-                                    event_listener(
-                                        listener = TangleEventListener::<ServiceContext, JobCalled>,
-                                        pre_processor = services_pre_processor,
-                                    ),
-                                )]
+                    id = $id,
+                    params(params_bytes),
+                    event_listener(
+                        listener = TangleEventListener::<ServiceContext, JobCalled>,
+                        pre_processor = services_pre_processor,
+                    ),
+                )]
         pub fn $name(params_bytes: Vec<u8>, context: ServiceContext) -> Result<String, Infallible> {
             let params: $params_type = serde_json::from_slice(&params_bytes).expect(&format!(
                 "Failed to deserialize {} params",
@@ -98,8 +90,5 @@ create_job!(2, add_executors, ExecutorParams);
 // Job to configure fast withdrawals
 create_job!(3, configure_fast_withdrawals, FastWithdrawalParams);
 
-// Job to manage batch posters
-create_job!(4, manage_batch_posters, BatchPosterParams);
-
 // Job to configure fee recipients
-create_job!(5, configure_fee_recipients, FeeRecipientParams);
+create_job!(4, configure_fee_recipients, FeeRecipientParams);

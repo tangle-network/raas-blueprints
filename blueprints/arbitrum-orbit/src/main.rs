@@ -3,10 +3,9 @@ use arbitrum_orbit_blueprint::{
     deploy_rollup,
     jobs::{
         AddExecutorsEventHandler, ConfigureFastWithdrawalsEventHandler,
-        ConfigureFeeRecipientsEventHandler, ManageBatchPostersEventHandler, ServiceContext,
-        SetValidatorsEventHandler,
+        ConfigureFeeRecipientsEventHandler, ServiceContext, SetValidatorsEventHandler,
     },
-    setup_initial_configuration, OrbitRaaSBlueprint, RollupConfig,
+    setup_initial_configuration, OrbitRaaSBlueprint, OrbitRollupConfig,
 };
 use color_eyre::Result;
 use gadget_sdk::{self as sdk, utils::evm::get_provider_http};
@@ -15,13 +14,18 @@ use sdk::runners::BlueprintRunner;
 
 #[sdk::main(env)]
 async fn main() -> Result<()> {
+    let context = ServiceContext {
+        config: env.clone(),
+    };
+
     let service_id = env.service_id().unwrap();
     let provider = get_provider_http(&env.http_rpc_endpoint);
     let blueprint_address = Address::from([0; 20]);
     let contract = OrbitRaaSBlueprint::new(blueprint_address, provider);
     let rollup_config_return = contract.getRollupConfig(service_id).call().await?;
 
-    let rollup_config = RollupConfig {
+    let rollup_config = OrbitRollupConfig {
+        parent_chain_id: rollup_config_return.chainId,
         chain_id: rollup_config_return.chainId,
         owner: rollup_config_return.owner,
         validators: rollup_config_return.validators,
@@ -47,10 +51,6 @@ async fn main() -> Result<()> {
     let deployment_result = deploy_rollup(rollup_config.clone()).await?;
     gadget_sdk::info!("Rollup deployed at: {}", deployment_result.rollup_address);
 
-    let context = ServiceContext {
-        config: env.clone(),
-    };
-
     // Setup initial configuration
     setup_initial_configuration(&deployment_result, &rollup_config, &context).await?;
     gadget_sdk::info!("Initial configuration completed");
@@ -60,7 +60,6 @@ async fn main() -> Result<()> {
     let add_executors = AddExecutorsEventHandler::new(&env, context.clone()).await?;
     let configure_fast_withdrawals =
         ConfigureFastWithdrawalsEventHandler::new(&env, context.clone()).await?;
-    let manage_batch_posters = ManageBatchPostersEventHandler::new(&env, context.clone()).await?;
     let configure_fee_recipients = ConfigureFeeRecipientsEventHandler::new(&env, context).await?;
 
     // Start the event watcher
@@ -69,7 +68,6 @@ async fn main() -> Result<()> {
         .job(set_validators)
         .job(add_executors)
         .job(configure_fast_withdrawals)
-        .job(manage_batch_posters)
         .job(configure_fee_recipients)
         .run()
         .await?;

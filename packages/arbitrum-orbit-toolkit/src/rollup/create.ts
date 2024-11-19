@@ -1,19 +1,16 @@
-import { Address, Chain, PrivateKeyAccount, PublicClient } from 'viem';
-import { prepareChainConfig } from '@arbitrum/orbit-sdk';
+import { Address, Chain, PrivateKeyAccount, PublicClient } from "viem";
+import { prepareChainConfig } from "@arbitrum/orbit-sdk";
 import {
   createRollupPrepareDeploymentParamsConfig,
   createRollupEnoughCustomFeeTokenAllowance,
   createRollupPrepareCustomFeeTokenApprovalTransactionRequest,
   createRollupPrepareTransactionRequest,
   createRollupPrepareTransactionReceipt,
-} from '@arbitrum/orbit-sdk';
+} from "@arbitrum/orbit-sdk";
 
 export interface CreateRollupParams {
   chainId: number | bigint;
-  owner: {
-    address: Address;
-    account: PrivateKeyAccount;
-  };
+  owner: PrivateKeyAccount;
   validators: Address[];
   batchPosters: Address[];
   nativeToken?: Address;
@@ -61,11 +58,12 @@ export async function createRollup(
 
     // Check and approve token allowance if needed
     if (!(await createRollupEnoughCustomFeeTokenAllowance(allowanceParams))) {
-      const approvalRequest = await createRollupPrepareCustomFeeTokenApprovalTransactionRequest(
-        allowanceParams
-      );
+      const approvalRequest =
+        await createRollupPrepareCustomFeeTokenApprovalTransactionRequest(
+          allowanceParams
+        );
 
-      const signedApprovalTx = await params.owner.account.signTransaction({
+      const signedApprovalTx = await params.owner.signTransaction({
         to: approvalRequest.to,
         data: approvalRequest.data,
         chainId: await parentChainClient.getChainId(),
@@ -73,14 +71,16 @@ export async function createRollup(
         maxPriorityFeePerGas: approvalRequest.maxPriorityFeePerGas,
         gas: approvalRequest.gas,
         nonce: approvalRequest.nonce,
-        type: 'eip1559' as const,
+        type: "eip1559" as const,
       });
 
       const approvalTxHash = await parentChainClient.sendRawTransaction({
         serializedTransaction: signedApprovalTx,
       });
 
-      await parentChainClient.waitForTransactionReceipt({ hash: approvalTxHash });
+      await parentChainClient.waitForTransactionReceipt({
+        hash: approvalTxHash,
+      });
     }
   }
 
@@ -96,7 +96,7 @@ export async function createRollup(
     publicClient: parentChainClient,
   });
 
-  const signedTx = await params.owner.account.signTransaction({
+  const signedTx = await params.owner.signTransaction({
     to: txRequest.to,
     data: txRequest.data,
     chainId: await parentChainClient.getChainId(),
@@ -104,7 +104,7 @@ export async function createRollup(
     maxPriorityFeePerGas: txRequest.maxPriorityFeePerGas,
     gas: txRequest.gas,
     nonce: txRequest.nonce,
-    type: 'eip1559' as const,
+    type: "eip1559" as const,
   });
 
   const txHash = await parentChainClient.sendRawTransaction({

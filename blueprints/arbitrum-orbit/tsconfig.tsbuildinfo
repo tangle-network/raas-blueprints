@@ -1,0 +1,1 @@
+{"root":["./scripts/add-executors.ts","./scripts/configure-fast-withdrawals.ts","./scripts/configure-token-bridge.ts","./scripts/deploy-rollup.ts","./scripts/set-validators.ts"],"version":"5.6.3"}

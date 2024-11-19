@@ -28,15 +28,11 @@ The blueprint provides several management jobs that can be triggered through the
    - Configure privileged executors
    - Manage executor permissions
 
-3. **Batch Poster Configuration**
-   - Set batch poster addresses
-   - Enable/disable batch posters
-
-4. **Fee Management**
+3. **Fee Management**
    - Configure fee recipients
    - Set fee distribution weights
 
-5. **Fast Withdrawals**
+4. **Fast Withdrawals**
    - Configure withdrawal confirmers
    - Enable/disable fast withdrawal functionality
 

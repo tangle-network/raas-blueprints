@@ -7,12 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces run build",
+    "build": "yarn workspace arbitrum-orbit-blueprint build",
     "type-check": "yarn workspaces run type-check",
-    "dev": "yarn workspaces run dev"
+    "dev": "yarn workspaces run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,json}\""
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
+    "prettier": "^3.2.5",
     "typescript": "^5.3.3"
   }
 }

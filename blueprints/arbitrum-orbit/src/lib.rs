@@ -4,11 +4,9 @@ use alloy_primitives::Address;
 use alloy_sol_types::sol;
 use color_eyre::eyre::Result;
 use gadget_sdk::load_abi;
-use jobs::{
-    manage_batch_posters, set_validators, BatchPosterParams, ServiceContext, TokenBridgeParams,
-    ValidatorParams,
-};
+use jobs::{set_validators, ServiceContext, TokenBridgeParams, ValidatorParams};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 pub mod jobs;
 
@@ -26,7 +24,7 @@ load_abi!(
 );
 
 #[derive(Serialize, Deserialize)]
-pub struct DeploymentResult {
+pub struct OrbitDeploymentResult {
     pub rollup_address: Address,
     pub inbox_address: Address,
     pub admin_address: Address,
@@ -35,7 +33,8 @@ pub struct DeploymentResult {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RollupConfig {
+pub struct OrbitRollupConfig {
+    pub parent_chain_id: u64,
     pub chain_id: u64,
     pub owner: Address,
     pub validators: Vec<Address>,
@@ -48,11 +47,25 @@ pub struct RollupConfig {
     pub native_token_is_erc20: bool,
 }
 
-pub async fn deploy_rollup(config: RollupConfig) -> Result<DeploymentResult> {
-    let config_json = serde_json::to_string(&config)?;
+pub async fn deploy_rollup(config: OrbitRollupConfig) -> Result<OrbitDeploymentResult> {
+    let params = json!({
+        "chainId": config.chain_id,
+        "owner": {
+            "address": config.owner,
+            "account": std::env::var("OWNER_PRIVATE_KEY")?
+        },
+        "validators": config.validators,
+        "batchPosters": config.batch_posters,
+        "nativeToken": config.native_token,
+        "dataAvailabilityCommittee": config.data_availability_committee,
+        "isCustomFeeToken": config.is_custom_fee_token,
+        "customFeeToken": config.custom_fee_token,
+        "nativeTokenIsERC20": config.native_token_is_erc20
+    });
+
     let output = Command::new("node")
         .arg("scripts/deploy-rollup.ts")
-        .arg(config_json)
+        .arg(params.to_string())
         .output()?;
 
     if !output.status.success() {
@@ -62,13 +75,13 @@ pub async fn deploy_rollup(config: RollupConfig) -> Result<DeploymentResult> {
         ));
     }
 
-    let result: DeploymentResult = serde_json::from_str(&String::from_utf8(output.stdout)?)?;
+    let result: OrbitDeploymentResult = serde_json::from_str(&String::from_utf8(output.stdout)?)?;
     Ok(result)
 }
 
 pub async fn setup_initial_configuration(
-    deployment: &DeploymentResult,
-    config: &RollupConfig,
+    deployment: &OrbitDeploymentResult,
+    config: &OrbitRollupConfig,
     context: &ServiceContext,
 ) -> Result<()> {
     // Configure token bridge if requested (one-time setup)
@@ -92,15 +105,6 @@ pub async fn setup_initial_configuration(
             ));
         }
     }
-
-    // Set initial batch posters
-    let batch_poster_params = BatchPosterParams {
-        rollup_address: deployment.rollup_address,
-        batch_posters: config.batch_posters.clone(),
-        is_active: true,
-    };
-    let batch_poster_bytes = serde_json::to_vec(&batch_poster_params)?;
-    manage_batch_posters(batch_poster_bytes, context.clone())?;
 
     // Set initial validators
     let validator_params = ValidatorParams {
