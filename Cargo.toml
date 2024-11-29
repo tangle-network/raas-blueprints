@@ -17,7 +17,7 @@ keywords = ["tangle", "blueprint", "avs"]
 rust-version = "1.81.0"
 
 [workspace.dependencies]
-alloy-primitives = "0.7.2"
+alloy-primitives = "0.8.12"
 alloy-json-abi = "0.7.2"
 alloy-sol-types = "0.7.2"
 alloy-rpc-client = "0.4.2"
